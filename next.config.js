@@ -3,12 +3,6 @@ const nextConfig = {
   eslint: {
     dirs: ['src'],
   },
-  // output: 'export', // Commented out for development with API routes
-  distDir: 'out',
-  trailingSlash: true,
-  images: {
-    unoptimized: true
-  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
