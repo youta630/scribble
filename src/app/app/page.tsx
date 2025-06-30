@@ -7,13 +7,8 @@ import UsageGuide from '@/components/UsageGuide';
 import UsageCounter from '@/components/UsageCounter';
 import SummarySidebar from '@/components/SummarySidebar';
 import MarkdownPreview from '@/components/MarkdownPreview';
-import FolderSelector from '@/components/FolderSelector';
-import BrowserSupportInfo from '@/components/BrowserSupportInfo';
 import { ThoughtSummary, generateMarkdownText } from '@/lib/types';
-import { fileSystemManager } from '@/lib/fileSystem';
-import { backgroundProcessor } from '@/lib/backgroundProcessor';
 import { ShortcutManager } from '@/lib/shortcuts';
-import { summarizeText } from '@/lib/llm';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,28 +19,12 @@ export default function Home() {
   const [selectedSummary, setSelectedSummary] = useState<ThoughtSummary | null>(null);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [showFolderSelector, setShowFolderSelector] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [currentFolderName, setCurrentFolderName] = useState<string | null>(null);
-  const [showBrowserInfo, setShowBrowserInfo] = useState(false);
 
   // 初期化
   useEffect(() => {
     const initialize = async () => {
       try {
-        // 既存の要約を読み込み
-        const summaries = await fileSystemManager.loadSummaries();
-        setSavedSummaries(summaries);
-        
-        // フォルダ名を取得
-        const folderName = fileSystemManager.getFolderName();
-        setCurrentFolderName(folderName);
-        
-        // フォルダが選択されていない場合は選択画面を表示
-        if (!fileSystemManager.hasFolder() && summaries.length === 0) {
-          setShowFolderSelector(true);
-        }
-
         // ショートカットマネージャーを初期化
         await ShortcutManager.setupWebShortcuts();
         
@@ -70,39 +49,6 @@ export default function Home() {
     };
   }, []);
 
-  const handleFolderSelected = async () => {
-    setShowFolderSelector(false);
-    try {
-      const summaries = await fileSystemManager.loadSummaries();
-      setSavedSummaries(summaries);
-      const folderName = fileSystemManager.getFolderName();
-      setCurrentFolderName(folderName);
-      // サイドバーを表示して結果を確認できるようにする
-      setSidebarExpanded(true);
-    } catch (error) {
-      console.error('Failed to load summaries after folder selection:', error);
-    }
-  };
-
-  const handleDirectFolderChange = async () => {
-    try {
-      const success = await fileSystemManager.selectFolder();
-      if (success) {
-        const summaries = await fileSystemManager.loadSummaries();
-        setSavedSummaries(summaries);
-        const folderName = fileSystemManager.getFolderName();
-        setCurrentFolderName(folderName);
-        // フォルダ変更後にサイドバーを表示
-        setSidebarExpanded(true);
-      }
-    } catch (error) {
-      console.error('Failed to change folder:', error);
-    }
-  };
-
-  const handleSkipFolderSelection = () => {
-    setShowFolderSelector(false);
-  };
 
   const handleAnalyze = async (text: string) => {
     if (isLimitReached) {
@@ -144,26 +90,11 @@ export default function Home() {
         (window as any).incrementSummaryUsage();
       }
       
-      // ファイルシステムに保存
-      const saved = await fileSystemManager.saveSummary(newSummary);
-      if (saved) {
-        setSavedSummaries(prev => [newSummary, ...prev]);
-        setShowNotification(true);
-        setTimeout(() => setShowNotification(false), 3000);
-        setSidebarExpanded(true);
-        
-        // バックグラウンドで自動保存をスケジュール
-        const taskId = backgroundProcessor.scheduleSummaryAutoSave(newSummary);
-        console.log(`Background save scheduled: ${taskId}`);
-        
-        // 成功通知をバックグラウンドで送信
-        backgroundProcessor.sendNotification(
-          'Summary Saved',
-          'Your thought asset has been successfully saved'
-        );
-      } else {
-        throw new Error('Failed to save summary');
-      }
+      // メモリに保存
+      setSavedSummaries(prev => [newSummary, ...prev]);
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+      setSidebarExpanded(true);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -209,14 +140,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white flex">
-      {/* Folder Selection Modal */}
-      {showFolderSelector && (
-        <FolderSelector
-          onFolderSelected={handleFolderSelected}
-          onSkip={handleSkipFolderSelection}
-        />
-      )}
-
       {/* Left Sidebar */}
       <SummarySidebar
         summaries={savedSummaries}
@@ -224,27 +147,8 @@ export default function Home() {
         onSelectSummary={handleSelectSummary}
         expanded={sidebarExpanded}
         onToggleExpanded={() => setSidebarExpanded(!sidebarExpanded)}
-        onFolderChange={handleDirectFolderChange}
-        folderName={currentFolderName}
         onExportSummary={exportMarkdown}
       />
-
-      {/* Browser Support Info near toggle button */}
-      {showBrowserInfo && (
-        <div className="fixed top-4 left-24 z-30">
-          <BrowserSupportInfo />
-        </div>
-      )}
-      
-      <div 
-        className="fixed top-4 left-16 z-20"
-        onMouseEnter={() => setShowBrowserInfo(true)}
-        onMouseLeave={() => setShowBrowserInfo(false)}
-      >
-        <div className="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors cursor-help">
-          <span className="text-xs text-gray-600">i</span>
-        </div>
-      </div>
 
       {/* Main Content Area */}
       <div className="flex-1 relative">
