@@ -36,7 +36,7 @@ Your task:
 Read the following conversation log and extract only the essential, structured thinking from it.
 
 Text:
-\${inputText}
+${inputText}
 
 Instructions:
 - Organize the conversation using the 8-label thinking framework described below  
