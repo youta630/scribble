@@ -1,7 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const getApiKey = (): string => {
-  return process.env.GEMINI_API_KEY || '';
+  const apiKey = process.env.GEMINI_API_KEY || '';
+  console.log('API Key check:', apiKey ? `Found (${apiKey.substring(0, 10)}...)` : 'NOT FOUND');
+  return apiKey;
 };
 
 const genAI = new GoogleGenerativeAI(getApiKey());
@@ -109,6 +111,7 @@ Respond in ${language === 'ja' ? 'Japanese' : language === 'en' ? 'English' : 't
   try {
     console.log('Sending prompt to Gemini API...');
     console.log('Input length:', inputText.length);
+    console.log('API Key available:', !!process.env.GEMINI_API_KEY);
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
