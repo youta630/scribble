@@ -329,7 +329,7 @@ export default function Home() {
 
                 {/* Input Section */}
                 <div className="mb-8">
-                  <UrlInput onAnalyze={handleAnalyze} disabled={isLoading || isLimitReached} />
+                  <UrlInput onAnalyze={handleAnalyze} disabled={isLoading} />
                 </div>
 
 
