@@ -21,6 +21,9 @@ export async function POST(request: NextRequest) {
       
       // Markdownテキストから8カテゴリを抽出
       const parseMarkdownToSummary = (markdown: string) => {
+        console.log('Starting markdown parsing...');
+        console.log('Markdown preview:', markdown.substring(0, 500));
+        
         const sections = {
           subject: '',
           background: '',
@@ -46,11 +49,14 @@ export async function POST(request: NextRequest) {
               const content = currentContent.join('\n').trim();
               if (content) {
                 (sections as any)[currentSection] = content;
+                console.log(`Saved section ${currentSection}:`, content.substring(0, 100));
               }
             }
             
             // 新しいセクションを開始
             const sectionTitle = trimmedLine.replace('## ', '').toLowerCase();
+            console.log('Found section title:', sectionTitle);
+            
             if (sectionTitle.includes('subject') || sectionTitle.includes('主題')) {
               currentSection = 'subject';
             } else if (sectionTitle.includes('background') || sectionTitle.includes('背景')) {
@@ -70,6 +76,7 @@ export async function POST(request: NextRequest) {
             } else {
               currentSection = '';
             }
+            console.log('Set current section to:', currentSection);
             currentContent = [];
           } else if (currentSection && trimmedLine) {
             currentContent.push(line);
@@ -81,13 +88,24 @@ export async function POST(request: NextRequest) {
           const content = currentContent.join('\n').trim();
           if (content) {
             (sections as any)[currentSection] = content;
+            console.log(`Saved final section ${currentSection}:`, content.substring(0, 100));
           }
         }
+
+        console.log('Final sections:', {
+          subject: sections.subject ? sections.subject.substring(0, 50) + '...' : 'EMPTY',
+          background: sections.background ? sections.background.substring(0, 50) + '...' : 'EMPTY',
+          analysis: sections.analysis ? sections.analysis.substring(0, 50) + '...' : 'EMPTY'
+        });
 
         return sections;
       };
 
       const parsedResult = parseMarkdownToSummary(markdownContent);
+      console.log('Parsed result sample:', {
+        subject: parsedResult.subject ? 'HAS CONTENT' : 'EMPTY',
+        background: parsedResult.background ? 'HAS CONTENT' : 'EMPTY'
+      });
       
       return NextResponse.json({
         success: true,
