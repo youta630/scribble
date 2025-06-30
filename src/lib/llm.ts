@@ -104,12 +104,19 @@ Output Format:
 Return ONLY a Markdown document using the 8-category framework.  
 Use H2 headings (## Subject, ## Background, …), keep categories non-empty only, and present them in logical or chronological order.
 
-Respond in \${language === 'ja' ? 'Japanese' : language === 'en' ? 'English' : 'the same language as the input'}.
+Respond in ${language === 'ja' ? 'Japanese' : language === 'en' ? 'English' : 'the same language as the input'}.
 `;
   try {
+    console.log('Sending prompt to Gemini API...');
+    console.log('Input length:', inputText.length);
+    
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
+    
+    console.log('Received response from Gemini API');
+    console.log('Response length:', text.length);
+    console.log('Response preview:', text.substring(0, 200));
 
     // Markdownコンテンツをそのまま返す
     return text.trim();
