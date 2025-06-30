@@ -3,7 +3,7 @@
 export class UsageManager {
   private static readonly USER_ID_KEY = 'chat-summary-user-id';
   private static readonly USAGE_CACHE_KEY = 'chat-summary-usage-cache';
-  private static readonly FREE_LIMIT = 3;
+  private static readonly FREE_LIMIT = 999;
 
   // ユーザーIDを取得または生成
   static getUserId(): string {

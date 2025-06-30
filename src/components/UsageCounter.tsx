@@ -12,7 +12,7 @@ export default function UsageCounter({ onLimitReached, onUsageUpdate }: UsageCou
   const [usageCount, setUsageCount] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const FREE_LIMIT = 3;
+  const FREE_LIMIT = 999;
 
   // 初期化：使用回数とプレミアムステータスを取得
   useEffect(() => {
