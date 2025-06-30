@@ -51,7 +51,7 @@ class LocalFileSystemManager implements FileSystemManager {
     }
 
     try {
-      this.directoryHandle = await window.showDirectoryPicker({
+      this.directoryHandle = await (window as any).showDirectoryPicker({
         mode: 'readwrite'
       });
       localStorage.setItem(this.STORAGE_KEY, 'selected');
