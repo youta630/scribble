@@ -72,6 +72,10 @@ export default function Home() {
       }
 
       const data = await response.json();
+      console.log('API Response data:', data);
+      console.log('Subject field:', data.subject);
+      console.log('Background field:', data.background);
+      
       const newSummary: ThoughtSummary = { 
         id: Date.now().toString(), 
         createdAt: new Date(),
@@ -84,6 +88,7 @@ export default function Home() {
         insights: data.insights,
         output: data.output
       };
+      console.log('Created newSummary:', newSummary);
       
       // 使用回数をインクリメント
       if (typeof (window as any).incrementSummaryUsage === 'function') {
