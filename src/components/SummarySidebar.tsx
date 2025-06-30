@@ -97,7 +97,7 @@ export default function SummarySidebar({
         <div className="space-y-2">
           {summaries.length === 0 ? (
             <div className="text-center py-8 text-gray-900 text-sm">
-              {folderName ? `${folderName} - No summaries yet` : 'No summaries yet'}
+              {folderName ? `${folderName} - No summaries yet` : 'No summaries found'}
             </div>
           ) : (
             summaries.map((summary) => (

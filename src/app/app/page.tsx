@@ -77,6 +77,8 @@ export default function Home() {
       setSavedSummaries(summaries);
       const folderName = fileSystemManager.getFolderName();
       setCurrentFolderName(folderName);
+      // サイドバーを表示して結果を確認できるようにする
+      setSidebarExpanded(true);
     } catch (error) {
       console.error('Failed to load summaries after folder selection:', error);
     }
@@ -90,6 +92,8 @@ export default function Home() {
         setSavedSummaries(summaries);
         const folderName = fileSystemManager.getFolderName();
         setCurrentFolderName(folderName);
+        // フォルダ変更後にサイドバーを表示
+        setSidebarExpanded(true);
       }
     } catch (error) {
       console.error('Failed to change folder:', error);

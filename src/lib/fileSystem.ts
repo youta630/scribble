@@ -68,7 +68,13 @@ class LocalFileSystemManager implements FileSystemManager {
   }
 
   hasFolder(): boolean {
-    return this.directoryHandle !== null && typeof window !== 'undefined' && window.showDirectoryPicker !== undefined;
+    if (this.directoryHandle !== null) {
+      return true;
+    }
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(this.STORAGE_KEY) === 'selected';
+    }
+    return false;
   }
 
   getFolderName(): string | null {
