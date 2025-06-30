@@ -55,10 +55,10 @@ class LocalFileSystemManager implements FileSystemManager {
         mode: 'readwrite'
       });
       localStorage.setItem(this.STORAGE_KEY, 'selected');
-      localStorage.setItem(this.FOLDER_NAME_KEY, this.directoryHandle.name);
+      localStorage.setItem(this.FOLDER_NAME_KEY, this.directoryHandle?.name || '');
       return true;
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if ((error as any).name === 'AbortError') {
         console.log('Folder selection cancelled by user');
       } else {
         console.error('Folder selection failed:', error);
