@@ -57,21 +57,21 @@ export async function POST(request: NextRequest) {
             const sectionTitle = trimmedLine.replace('## ', '').toLowerCase();
             console.log('Found section title:', sectionTitle);
             
-            if (sectionTitle.includes('subject') || sectionTitle.includes('主題')) {
+            if (sectionTitle.includes('subject') || sectionTitle.includes('主題') || sectionTitle.includes('テーマ') || sectionTitle.includes('課題')) {
               currentSection = 'subject';
-            } else if (sectionTitle.includes('background') || sectionTitle.includes('背景')) {
+            } else if (sectionTitle.includes('background') || sectionTitle.includes('背景') || sectionTitle.includes('経緯') || sectionTitle.includes('きっかけ')) {
               currentSection = 'background';
-            } else if (sectionTitle.includes('hypothesis') || sectionTitle.includes('仮説')) {
+            } else if (sectionTitle.includes('hypothesis') || sectionTitle.includes('仮説') || sectionTitle.includes('動機') || sectionTitle.includes('想定')) {
               currentSection = 'hypothesis';
-            } else if (sectionTitle.includes('analysis') || sectionTitle.includes('分析')) {
+            } else if (sectionTitle.includes('analysis') || sectionTitle.includes('分析') || sectionTitle.includes('検討') || sectionTitle.includes('考察')) {
               currentSection = 'analysis';
-            } else if (sectionTitle.includes('decision') || sectionTitle.includes('決定')) {
+            } else if (sectionTitle.includes('decision') || sectionTitle.includes('決定') || sectionTitle.includes('結論') || sectionTitle.includes('判断')) {
               currentSection = 'decision';
-            } else if (sectionTitle.includes('development') || sectionTitle.includes('発展')) {
+            } else if (sectionTitle.includes('development') || sectionTitle.includes('発展') || sectionTitle.includes('応用') || sectionTitle.includes('展開')) {
               currentSection = 'development';
-            } else if (sectionTitle.includes('insights') || sectionTitle.includes('洞察')) {
+            } else if (sectionTitle.includes('insights') || sectionTitle.includes('洞察') || sectionTitle.includes('気付き') || sectionTitle.includes('学び')) {
               currentSection = 'insights';
-            } else if (sectionTitle.includes('output') || sectionTitle.includes('成果')) {
+            } else if (sectionTitle.includes('output') || sectionTitle.includes('成果') || sectionTitle.includes('結果') || sectionTitle.includes('アウトプット')) {
               currentSection = 'output';
             } else {
               currentSection = '';
