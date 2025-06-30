@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { fileSystemManager } from '@/lib/fileSystem';
 
 interface FolderSelectorProps {
   onFolderSelected: () => void;
@@ -14,12 +15,12 @@ export default function FolderSelector({ onFolderSelected, onSkip }: FolderSelec
     setIsSelecting(true);
     
     try {
-      if (window.showDirectoryPicker) {
-        await window.showDirectoryPicker();
+      const success = await fileSystemManager.selectFolder();
+      if (success) {
         onFolderSelected();
       } else {
-        alert('Your browser does not support folder selection. Summaries will be saved locally and downloaded as files.');
-        onSkip();
+        // User cancelled or browser doesn't support it
+        console.log('Folder selection cancelled or not supported');
       }
     } catch (error) {
       console.log('Folder selection cancelled');

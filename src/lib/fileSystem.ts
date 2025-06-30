@@ -34,7 +34,9 @@ class LocalFileSystemManager implements FileSystemManager {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
       if (stored) {
-        this.directoryHandle = await (navigator as any).storage.getDirectory();
+        // Note: File System Access API directory handles cannot be restored across sessions
+        // We rely on localStorage for folder name persistence
+        console.log('Directory handle cannot be restored across sessions due to browser security');
       }
     } catch (error) {
       console.log('Could not restore directory handle');
@@ -72,7 +74,9 @@ class LocalFileSystemManager implements FileSystemManager {
       return true;
     }
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(this.STORAGE_KEY) === 'selected';
+      const hasStoredFolder = localStorage.getItem(this.STORAGE_KEY) === 'selected';
+      const hasStoredName = localStorage.getItem(this.FOLDER_NAME_KEY) !== null;
+      return hasStoredFolder && hasStoredName;
     }
     return false;
   }
