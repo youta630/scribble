@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 
 export const dynamic = 'force-dynamic';
-
-// データディレクトリのパス
-const DATA_DIR = path.join(process.cwd(), 'data');
-const USAGE_FILE = path.join(DATA_DIR, 'usage.json');
 
 interface UsageData {
   [userId: string]: {
@@ -16,43 +10,17 @@ interface UsageData {
   };
 }
 
-// データディレクトリとファイルの初期化
-async function ensureDataFile() {
-  try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    
-    try {
-      await fs.access(USAGE_FILE);
-    } catch {
-      // ファイルが存在しない場合は空のJSONで初期化
-      await fs.writeFile(USAGE_FILE, JSON.stringify({}, null, 2));
-    }
-  } catch (error) {
-    console.error('Failed to ensure data file:', error);
-  }
-}
+// メモリベースのストレージ（開発/デバッグ用）
+let memoryUsageData: UsageData = {};
 
 // 使用データを読み込み
 async function readUsageData(): Promise<UsageData> {
-  try {
-    await ensureDataFile();
-    const data = await fs.readFile(USAGE_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Failed to read usage data:', error);
-    return {};
-  }
+  return memoryUsageData;
 }
 
 // 使用データを保存
 async function writeUsageData(data: UsageData): Promise<void> {
-  try {
-    await ensureDataFile();
-    await fs.writeFile(USAGE_FILE, JSON.stringify(data, null, 2));
-  } catch (error) {
-    console.error('Failed to write usage data:', error);
-    throw error;
-  }
+  memoryUsageData = data;
 }
 
 // GET: 使用回数を取得
@@ -72,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       count: userUsage?.count || 0,
-      limit: 3,
+      limit: 999,
       firstUsed: userUsage?.firstUsed || null,
       lastUsed: userUsage?.lastUsed || null
     });
@@ -116,8 +84,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       count: usageData[userId].count,
-      limit: 3,
-      isLimitReached: usageData[userId].count >= 3
+      limit: 999,
+      isLimitReached: usageData[userId].count >= 999
     });
   } catch (error) {
     console.error('POST /api/usage error:', error);
